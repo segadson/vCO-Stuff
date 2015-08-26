@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="421e10ab-8069-4245-81e2-41443443d6ec" version="1.0.3" api-version="3.1.0" allowed-operations="vfe" restartMode="0">
+    <display-name>FindVM</display-name>
+
+    <description>Fix issue if error in finding VM</description>
+
+    <position x="100.0" y="50.0"/>
+
+    <input>
+        <param name="vmname" type="string"/>
+    </input>
+
+    <output>
+        <param name="exists" type="boolean"/>
+        <param name="cluster" type="VC:ClusterComputeResource"/>
+        <param name="esxnode" type="VC:HostSystem"/>
+        <param name="vm" type="VC:VirtualMachine"/>
+    </output>
+
+    <workflow-item name="item0" type="end" end-mode="0">
+        <position x="384.5" y="45.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item1" out-name="item0" type="task">
+        <display-name>Scriptable task</display-name>
+
+        <script encoded="false">
+var exists = false;
+var cluster = null;
+var esxnode = null;
+//System.log ("Sleeping 5 mins");
+//System.sleep (3000);
+
+	  
+try
+{
+	for each (var myclus in VcPlugin.getAllClusterComputeResources())
+	{
+		for each (var myhost in myclus.host)
+		{
+			for each (var myvm in myhost.vm)
+			{
+				if (myvm.name.toLowerCase() == vmname.toLowerCase())
+				{
+					exists = true;
+					cluster = myclus;
+					esxnode = myhost;
+					vm = myvm;
+					break;
+				}
+			}
+			if (exists)
+			{
+				break;
+			}
+		}
+		if (exists)
+		{
+			break;
+		}
+	}
+/*	var arrVcSdkConnection;     
+	arrVcSdkConnection = VcPlugin.allSdkConnections;   
+	for each (var objVcSdkConnection in arrVcSdkConnection) 
+	{     
+		for each (var myvm in objVcSdkConnection.getAllVirtualMachines())
+		{
+			if (myvm.name.toLowerCase() == vmname.toLowerCase())
+			{
+				exists = true;
+				vm = myvm;
+				esxnode = vm.summary.runtime.host;
+				for each (var myclus in objVcSdkConnection.getAllClusterComputeResources())
+				{
+					for each (var myhost in myclus.host)
+					{
+						if (myhost.name == esxnode.name)
+						{
+							cluster = myclus;
+							break;
+						}
+					}
+					if (cluster != null)
+					{
+						break;
+					}
+				}
+				break;
+			}
+		}
+		if (exists)
+		{
+			break;
+		}
+	}
+*/
+}
+catch (strException)
+{
+	System.log (strException);
+}
+        </script>
+
+        <in-binding>
+            <bind name="vmname" type="string" export-name="vmname"/>
+        </in-binding>
+
+        <out-binding>
+            <bind name="exists" type="boolean" export-name="exists"/>
+            <bind name="cluster" type="VC:ClusterComputeResource" export-name="cluster"/>
+            <bind name="esxnode" type="VC:HostSystem" export-name="esxnode"/>
+            <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+        </out-binding>
+
+        <position x="204.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <presentation>
+        <p-param name="vmname">
+            <desc>vm_cluster_node_1</desc>
+        </p-param>
+    </presentation>
+</workflow>

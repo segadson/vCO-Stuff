@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="7fa57882-be77-406d-8fe2-1a93798fc97b" version="1.0.0" api-version="3.1.0" allowed-operations="vf" restartMode="1">
+    <display-name>Get VM Uuid</display-name>
+
+    <description>
+Retrieves the universally unique identifier (UUID) of a given virtual machine.
+
+Note:
+This workflow is needed when DynamicOps calls vCenter Orchestrator workflows having output parameters of VC:VirtualMachine type in order to make the correspondence between a particular vCenter Orchestrator and DynamicOps virtual machine.
+    </description>
+
+    <position x="100.0" y="50.0"/>
+
+    <input>
+        <param name="vm" type="VC:VirtualMachine">
+            <description>A virtual machine</description>
+        </param>
+    </input>
+
+    <output>
+        <param name="vmUuid" type="string">
+            <description>A universally unique identifier (UUID) of the given virtual machine</description>
+        </param>
+    </output>
+
+    <workflow-item name="item0" type="end" end-mode="0">
+        <position x="384.5" y="45.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item1" out-name="item0" type="task">
+        <display-name>Get VM Uuid</display-name>
+
+        <script encoded="false">
+vmUuid = vm.config.uuid;
+        </script>
+
+        <in-binding>
+            <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+        </in-binding>
+
+        <out-binding>
+            <bind name="vmUuid" type="string" export-name="vmUuid"/>
+        </out-binding>
+
+        <position x="204.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <presentation>
+        <p-param name="vm">
+            <desc>vm</desc>
+        </p-param>
+    </presentation>
+</workflow>
